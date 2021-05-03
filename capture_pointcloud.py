@@ -45,7 +45,7 @@ class Create_point_cloud():
         """
         ## parsing command line arguments
         try:
-            opts, args = getopt.getopt(argv, "pointcloud:o:t:d:", ["ofile=", "timer=", "device="])
+            opts, args = getopt.getopt(argv, "hi:o:t:d:", ["ofile=", "timer=", "device="])
         except getopt.GetoptError:
             print('python save_pointcloud.py -o <outputfile> -t <timer> -d <device>')
             sys.exit(2)
