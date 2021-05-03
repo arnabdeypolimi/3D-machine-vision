@@ -11,11 +11,11 @@ sudo apt install libk4a1.4*
 sudo apt install k4a-tools
 sudo cp 99-k4a.rules /etc/udev/rules.d/
 ```
-##Test kinect 
+## Test kinect 
 ```
 k4aviewer
 ```
-##ROS installation
+## ROS installation
 Run roscore and check the version 
 ```
 roscore
@@ -34,7 +34,7 @@ sudo apt install python-rosdep
 sudo rosdep init
 rosdep update
 ```
-##Setup local ROS workspace 
+## Setup local ROS workspace 
 
 ```
 cd ~
@@ -46,7 +46,7 @@ catkin_make --force-cmake
 echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
-##Test azure_kinect_ros : 
+## Test azure_kinect_ros : 
 ```
 roslaunch azure_kinect_ros_driver driver.launch
 rosrun rviz rviz
