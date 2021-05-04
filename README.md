@@ -1,6 +1,7 @@
 # 3D-machine-vision
 The companion github repository of 3D machine vision course (Polytech Nice Sophia University, France)
-##Install d
+
+## Install Azure kinect SDK
 ``` 
 sudo apt install curl git 
 curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -55,7 +56,14 @@ add PointCloud2 and chose the right topic and modify the topic to display the po
 
 
 
+---
+This Github repository is part of the 3D Machine Vision Course Practical Software.
 
+Version 1.0.0
+
+Authors: Arnab Dey, Houssem Bouhlabal, Andrew Comport
+
+Contact: Andrew.Comport@cnrs.fr
 
 
 
