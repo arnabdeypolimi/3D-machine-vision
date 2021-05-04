@@ -10,10 +10,11 @@ def skew(vect):
 
 def SE3_exp(angular_velocity, linear_velocity):
     #TODO
+    return np.eye(4)
 
 def transform_pointcloud(pointcloud, vector):
     #TODO
-    pass
+    return pointcloud
 
 class AzureKinect():
     """
