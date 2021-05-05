@@ -67,27 +67,16 @@ class Create_point_cloud():
                                                                   depth_trunc=15.0)
 
         #generate point cloud from RGBD
-        #TODO
-        # create pointcloud from RGBD images
-
-        #write pointcloud in ply file
+        pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.cam.intrinsic)
+        
+	#write pointcloud in ply file
         o3d.io.write_point_cloud(self.output_file, pcd)
-
-        # filter out depth values after 5 meter
-        filtred_depth = filter_pointcloud(pointcloud, 5.0)
-        new_filename = self.output_file.split(".")[0]+ "_filtred." + self.output_file.split(".")[1]
-        o3d.io.write_point_cloud(new_filename, filtred_depth)
-
-        #define transformation matrix
-        transform = SE3_exp([0,0,0],[0,0,15])
-        print(transform)
-
-        #transform point cloud
-        transformed_pcd = transform_pointcloud(pcd, transform)
-
-        #write the new point cloud
+        transform = SE3_exp([0,np.pi,0],[0,0,0])
+        pcd = transform_pointcloud(pcd, transform)
+        
         new_filename = self.output_file.split(".")[0]+ "_transformed." + self.output_file.split(".")[1]
-        o3d.io.write_point_cloud(new_filename, transformed_pcd)
+        o3d.io.write_point_cloud(new_filename, pcd)
+
         cv2.destroyAllWindows()
 
 if __name__=="__main__":
