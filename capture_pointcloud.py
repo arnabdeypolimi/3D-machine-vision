@@ -3,27 +3,31 @@ import cv2
 import open3d as o3d
 import argparse
 from scipy.linalg import expm
+import copy
+
 
 def skew(vect):
-    #TODO
-    pass
+    # TODO
+    return np.eye(3)
 
 def SE3_exp(angular_velocity, linear_velocity):
-    #TODO
+    # TODO
     return np.eye(4)
 
-def transform_pointcloud(pointcloud, vector):
+
+def transform_pointcloud(pointcloud, pose_T):
     #TODO
     return pointcloud
 
 def filter_pointcloud(pointcloud, distance):
-    #TODO
+    # TODO
     return pointcloud
 
 class AzureKinect():
     """
     class for azure kinect related functions
     """
+
     def __init__(self, device_config_path):
         self.config = o3d.io.read_azure_kinect_sensor_config(device_config_path)
         self.intrinsic = o3d.camera.PinholeCameraIntrinsic(1280, 720, 608.9779052734375, 608.77679443359375,
@@ -44,47 +48,55 @@ class AzureKinect():
                 continue
             return rgbd.color, rgbd.depth
 
+
 class Create_point_cloud():
     """
     Class contain functions to generate and save point clouds
     """
+
     def __init__(self, opt):
-        self.output_file= opt.output_file
+        self.output_file = opt.output_file
         self.cam = AzureKinect(opt.device_config_path)
         self.cam.start()
 
     def create_point_cloud(self):
         while True:
             color_frame, depth_frame = self.cam.get_frame()
-            #display color image
-            color_image = cv2.cvtColor(np.asarray(color_frame).astype(np.uint8),cv2.COLOR_RGB2BGR)
+            # display color image
+            color_image = cv2.cvtColor(np.asarray(color_frame).astype(np.uint8), cv2.COLOR_RGB2BGR)
             cv2.imshow('bgr', color_image)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
         # generate RGBD image by combining depth and rgb frames
-        rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color_frame, depth_frame, convert_rgb_to_intensity=False,
+        rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color_frame, depth_frame,
+                                                                  convert_rgb_to_intensity=False,
                                                                   depth_trunc=15.0)
 
-        #generate point cloud from RGBD
+        # generate point cloud from RGBD
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.cam.intrinsic)
-        
-	#write pointcloud in ply file
-        o3d.io.write_point_cloud(self.output_file, pcd)
-        transform = SE3_exp([0,np.pi,0],[0,0,0])
-        pcd = transform_pointcloud(pcd, transform)
-        
-        new_filename = self.output_file.split(".")[0]+ "_transformed." + self.output_file.split(".")[1]
-        o3d.io.write_point_cloud(new_filename, pcd)
 
+        # write pointcloud in ply file
+        o3d.io.write_point_cloud(self.output_file, pcd)
+
+        pcd_filtred = filter_pointcloud(copy.copy(pcd), 1.0)
+        new_filename = self.output_file.split(".")[0] + "_filtred." + self.output_file.split(".")[1]
+        o3d.io.write_point_cloud(new_filename, pcd_filtred)
+
+        transform = SE3_exp([0, np.pi, 0], [0, 0, 0])
+        pcd_trasnformed = transform_pointcloud(copy.copy(pcd), transform)
+
+        new_filename = self.output_file.split(".")[0] + "_transformed." + self.output_file.split(".")[1]
+        o3d.io.write_point_cloud(new_filename, pcd_trasnformed)
         cv2.destroyAllWindows()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     # create object of point cloud class
     parser = argparse.ArgumentParser(description='Azure kinect display RGBD image')
     parser.add_argument('--device_config_path', type=str, help='input json kinect config')
     parser.add_argument('--output_file', type=str, help='The path of output point cloud file')
     opt = parser.parse_args()
 
-    pc=Create_point_cloud(opt)
+    pc = Create_point_cloud(opt)
     pc.create_point_cloud()
