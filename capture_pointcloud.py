@@ -7,20 +7,47 @@ import copy
 
 
 def skew(vect):
+    """
+    This function should define the 3X3 skew symmetric matrix.
+    :param vect: angular velocity (u_1, u_2, u_3)
+    :return: 3X3 skew numpy array
+    """
     # TODO
+    ## your code below
     return np.eye(3)
 
 def SE3_exp(linear_velocity, angular_velocity):
+    """
+    This is the function where you will define 4X4 homogeneous twist matrix [x]^ and return pose T= e[x]^
+    :param linear_velocity: numpy array of size 1x3
+    :param angular_velocity: numpy array of size 1x3
+    :return: 4x4 numpy array of pose matrix
+    """
     # TODO
+    ## your code below
     return np.eye(4)
 
 
 def transform_pointcloud(pointcloud, pose_T):
+    """
+    This function will be used for transforming point clouds using the pose T
+    :param pointcloud: open3d pointcloud object
+    :param pose_T: 4x4 numpy array
+    :return: open3d pointcloud object
+    """
     #TODO
+    ## your code below
     return pointcloud
 
 def filter_pointcloud(pointcloud, distance):
+    """
+    filter pointcloud based on distance
+    :param pointcloud: open3d pointcloud object
+    :param distance: distance in meter
+    :return: open3d pointcloud object
+    """
     # TODO
+    ## your code below
     return pointcloud
 
 class AzureKinect():
