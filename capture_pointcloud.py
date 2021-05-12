@@ -10,7 +10,7 @@ def skew(vect):
     # TODO
     return np.eye(3)
 
-def SE3_exp(angular_velocity, linear_velocity):
+def SE3_exp(linear_velocity, angular_velocity):
     # TODO
     return np.eye(4)
 
@@ -73,17 +73,16 @@ class Create_point_cloud():
                                                                   convert_rgb_to_intensity=False,
                                                                   depth_trunc=15.0)
 
-        # generate point cloud from RGBD
+        # generate point cloud from RGBD and write it
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.cam.intrinsic)
-
-        # write pointcloud in ply file
         o3d.io.write_point_cloud(self.output_file, pcd)
 
         pcd_filtred = filter_pointcloud(copy.copy(pcd), 1.0)
         new_filename = self.output_file.split(".")[0] + "_filtred." + self.output_file.split(".")[1]
         o3d.io.write_point_cloud(new_filename, pcd_filtred)
 
-        transform = SE3_exp([0, np.pi, 0], [0, 0, 0])
+        # TODO : define properly the twist vector
+        transform = SE3_exp([0, 0, 0], [0, 0, 0])
         pcd_trasnformed = transform_pointcloud(copy.copy(pcd), transform)
 
         new_filename = self.output_file.split(".")[0] + "_transformed." + self.output_file.split(".")[1]
