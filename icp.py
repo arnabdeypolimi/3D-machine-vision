@@ -31,8 +31,8 @@ def estimate_rigid_body_transformation(P_ref, P_current):
     J = np.vstack([np.array([      [1, 0, 0,          0          , P_current[i,2]   , -P_current[i,1] ],
                                    [0, 1, 0, -P_current[i,2] ,           0          ,  P_current[i,0] ],
                                    [0, 0, 1,  P_current[i,1] , -P_current[i,0]  ,     0               ]]) for i in range(len(residual))])
-    
-    J_pesudo = #Calculate the psudo inverse
+    # TODO Calculate the inverse
+    J_pesudo =
     delta_x = -J_pesudo @ residual.flatten()
     dT = SE3_exp(delta_x[0:3], delta_x[3:6])
     return dT, delta_x, residual
