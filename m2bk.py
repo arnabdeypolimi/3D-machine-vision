@@ -8,57 +8,37 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.mplot3d import Axes3D
+from glob import glob
 
+class DatasetHandler():
 
-class DatasetHandler:
-
-    def __init__(self,num_frames):
+    def __init__(self, num_frames):
         # Define number of frames
         self.num_frames = num_frames
 
         # Set up paths
         root_dir_path = os.path.dirname(os.path.realpath(__file__))
-        self.image_dir = os.path.join(root_dir_path, 'data/rgb')
-        self.depth_dir = os.path.join(root_dir_path, 'data/depth')
-
-        # Set up data holders
-        self.images = []
-        self.images_rgb = []
-        self.depth_maps = []
-
+        self.images_dir = glob(root_dir_path + '/data/rgb/*')
+        sorted(self.images_dir)
+        print(len(self.images_dir))
+        self.depths_dir = glob(root_dir_path + '/data/depth/*')
+        sorted(self.depths_dir)
         self.k = np.array([[640, 0, 640],
                            [0, 480, 480],
                            [0,   0,   1]], dtype=np.float32)
-        
 
-        # Read first frame
-        self.read_frame()
-        print("\r" + ' '*20 + "\r", end='')
-        
-    def read_frame(self):
-        self._read_depth()
-        self._read_image()
-              
-    def _read_image(self):
-        for i in range(1, self.num_frames+1):
-            zeroes = "0" * (5 - len(str(i)))
-            im_name = "{0}/frame_{1}{2}.png".format(self.image_dir, zeroes, str(i))
-            self.images.append(cv.imread(im_name, flags=0))
-            self.images_rgb.append(cv.imread(im_name)[:, :, ::-1])
-            print ("Data loading: {0}%".format(int((i + self.num_frames) / (self.num_frames * 2 - 1) * 100)), end="\r")
-            
-       
-    def _read_depth(self):
-        for i in range(1, self.num_frames+1):
-            zeroes = "0" * (5 - len(str(i)))
-            depth_name = "{0}/frame_{1}{2}.dat".format(self.depth_dir, zeroes, str(i))
-            depth = np.loadtxt(
-                depth_name,
-                delimiter=',',
-                dtype=np.float64) * 1000.0
-            self.depth_maps.append(depth)
-            print ("Data loading: {0}%".format(int(i / (self.num_frames * 2 - 1) * 100)), end="\r")
-            
+    def __len__(self):
+        return len(self.images_dir)
+
+    def __getitem__(self, idx):
+        im_name = self.images_dir[idx]
+        depth_name = self.depths_dir[idx]
+        image = cv.imread(im_name)[:, :, ::-1]
+        depth = np.loadtxt(
+            depth_name,
+            delimiter=',',
+            dtype=np.float64) * 1000.0
+        return image, depth
         
 def visualize_camera_movement(image1, image1_points, image2, image2_points, is_show_img_after_move=False):
     image1 = image1.copy()

@@ -4,26 +4,27 @@ from matplotlib import pyplot as plt
 from m2bk import *
 import sys
 
+
 def get_pose(image1, image2, depth, k, display=True):
-    kp1, des1  = #TODO extract the features from image1
-    if display== True:
+    kp1, des1 = extract_features(image1)
+    if display == True:
         print("Number of features detected in frame {0}\n".format(len(kp1)))
         print("Coordinates of the first keypoint in frame {0}".format(str(kp1[0].pt)))
-        #TODO visualize the extracted features
-    kp2, des2 = #TODO extract the features from image2
-    match = #TODO Match the features using the des1, des2 ( des : abrv for descriptor)
+        visualize_features(image1, kp1)
+    kp2, des2 = extract_features(image2)
+    match = match_features(des1, des2)
     if display == True:
         print("Number of features matched in frame: {0}".format(len(match)))
-    filtred_match = # TODO filtre the features with respect to the distance threshold
+    filtred_match = filter_matches_distance(match)
     if display == True:
         print("Number of filtred features match in frames: {0}".format(len(filtred_match)))
-        # TODO visualize the match
-
-    rmat, tvec = #TODO Estimate the pose matrix
-    if display== True:
+        visualize_matches(image1, kp1, image2, kp2, filtred_match)
+    rmat, tvec = estimate_motion(filtred_match, kp1, kp2, k, depth1=depth)
+    print(tvec)
+    if display == True:
         print("Estimated rotation:\n {0}".format(rmat))
         print("Estimated translation:\n {0}".format(tvec))
-    return  rmat, tvec
+    return rmat, tvec
 
 def extract_features(image):
     """
@@ -37,11 +38,11 @@ def extract_features(image):
     des -- list of the keypoint descriptors in an image
     """
     # Initiate ORB detector
-    orb = cv2.ORB_create(nfeatures=1500)
-    
+    orb = cv2.ORB_create(nfeatures=3000)
+
     # Find the keypoints and descriptors with ORB
     kp, des = orb.detectAndCompute(image, None)
-    
+
     return kp, des
 
 def visualize_features(image, kp):
@@ -105,7 +106,7 @@ def visualize_matches(image1, kp1, image2, kp2, match):
     plt.imshow(image_matches)
     plt.show()
 
-def estimate_pose(match, kp1, kp2, k, depth1=None):
+def estimate_motion(match, kp1, kp2, k, depth1=None):
     """
     Estimate camera motion from a pair of subsequent image frames
 
@@ -113,7 +114,7 @@ def estimate_pose(match, kp1, kp2, k, depth1=None):
     match -- list of matched features from the pair of images
     kp1 -- list of the keypoints in the first image
     kp2 -- list of the keypoints in the second image
-    k -- camera calibration matrix 
+    k -- camera calibration matrix
 
     Optional arguments:
     depth1 -- a depth map of the first frame. This argument is not needed if you use Essential Matrix Decomposition
@@ -170,13 +171,12 @@ def filter_matches_distance(match, dist_threshold=0.6):
 
     Arguments:
     match -- list of matched features from two images
-    dist_threshold -- maximum allowed relative distance between the best matches, (0.0, 1.0) 
+    dist_threshold -- maximum allowed relative distance between the best matches, (0.0, 1.0)
 
     Returns:
     filtered_match -- list of good matches, satisfying the distance threshold
     """
-    #TODO filtre the distance between the matches features  using
     filtered_match = [m for m, n in match if m.distance < (dist_threshold * n.distance)]
-    
+
     return filtered_match
 
