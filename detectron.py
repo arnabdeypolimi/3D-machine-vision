@@ -46,10 +46,18 @@ class Detectron():
             masks = None
         cv2.imshow("out", out.get_image()[:, :, ::-1])
         cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        index = 0
+
+        mask = np.zeros(im.shape[:2])
         #TODO filter the mask keeping only the indecies of label
-        return masks[index].mask
+        # hint: you can access the masks by their index, like masks[idndex].mask 
+        
+        #to visualize the masked image
+        mask = mask.astype(np.uint8)
+        masked_image = cv2.bitwise_and(im, im, mask=mask)
+        cv2.imshow("with mask applied", masked_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        return mask
 
 
 if __name__ == "__main__":
