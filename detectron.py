@@ -48,9 +48,7 @@ class Detectron():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         index = 0
-        for i, l in enumerate(labels):
-            if label in l:
-                index = i
+        #TODO filter the mask keeping only the indecies of label
         return masks[index].mask
 
 

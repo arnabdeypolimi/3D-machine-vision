@@ -92,8 +92,8 @@ class Create_point_cloud():
         # generate point cloud from RGBD
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, self.cam.intrinsic)
 
-        #pcd_filtred = filter_pointcloud(copy.copy(pcd), 1)
-        o3d.visualization.draw_geometries([pcd])
+        pcd_filtred = filter_pointcloud(copy.copy(pcd), 1)
+        o3d.visualization.draw_geometries([pcd_filtred])
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
